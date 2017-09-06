@@ -183,6 +183,8 @@ HISTORY provides the history to `completing-read'."
   (cl-case process-type
     ('stack-ghci
      (haskell-session-get-targets-command haskell-process-path-stack "ide" "targets"))
+    ('jbi
+     (haskell-session-get-targets-command haskell-process-path-jbi "targets"))
     (t
      (haskell-cabal-enum-targets (haskell-process-type)))))
 

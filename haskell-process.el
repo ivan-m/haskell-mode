@@ -124,7 +124,19 @@ HPTYPE is the result of calling `'haskell-process-type`' function."
                         (list "ghci")
                         (let ((target (haskell-session-target session)))
                           (if target (list target) nil))
-                        haskell-process-args-stack-ghci))))))))
+                        haskell-process-args-stack-ghci)))))
+      ('jbi
+       (append (list (format "Starting inferior `jbi repl' process using %s ..."
+                             haskell-process-path-jbi)
+                     session-name
+                     nil)
+               (apply haskell-process-wrapper-function
+                      (list
+                       (append
+                        (haskell-process-path-to-list haskell-process-path-jbi)
+                        (list "repl")
+                        (let ((target (haskell-session-target session)))
+                          (if target (list target) nil))))))))))
 
 (defun haskell-process-path-to-list (path)
   "Convert a path (which may be a string or a list) to a list."

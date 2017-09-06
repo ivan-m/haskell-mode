@@ -68,7 +68,8 @@ If none of the above apply, ghci will be used."
                  (const ghci)
                  (const cabal-repl)
                  (const stack-ghci)
-                 (const cabal-new-repl))
+                 (const cabal-new-repl)
+                 (const jbi))
   :group 'haskell-interactive)
 
 (defcustom haskell-process-wrapper-function
@@ -144,6 +145,12 @@ first elements is a string and the remaining elements are arguments,
 which will be prepended to `haskell-process-args-stack-ghci'."
   :group 'haskell-interactive
   :type '(choice string (repeat string)))
+
+(defcustom haskell-process-path-jbi
+  "jbi"
+  "The path for starting jbi."
+  :group 'haskell-interactive
+  :type 'string)
 
 (defcustom haskell-process-args-ghci
   '("-ferror-spans")
@@ -442,26 +449,37 @@ This function also sets the `inferior-haskell-root-dir'"
                                                   (lambda (f)
                                                     (string-match-p ".\\.cabal\\'" f))
                                                   (directory-files d))))))
-    (if (eq 'auto haskell-process-type)
-        (cond
-         ;; User has explicitly initialized this project with cabal
-         ((and cabal-sandbox
-               (executable-find "cabal"))
-          (setq inferior-haskell-root-dir cabal-sandbox)
-          'cabal-repl)
-         ((and stack
-               (executable-find "stack"))
-          (setq inferior-haskell-root-dir stack)
-          'stack-ghci)
-         ((and cabal
-               (executable-find "cabal"))
-          (setq inferior-haskell-root-dir cabal)
-          'cabal-repl)
-         ((executable-find "ghc")
-          (setq inferior-haskell-root-dir default-directory)
-          'ghci)
-         (t
-          (error "Could not find any installation of GHC.")))
-      haskell-process-type)))
+    (cl-case haskell-process-type
+      ('auto
+       (cond
+        ;; User has explicitly initialized this project with cabal
+        ((and cabal-sandbox
+              (executable-find "cabal"))
+         (setq inferior-haskell-root-dir cabal-sandbox)
+         'cabal-repl)
+        ((and stack
+              (executable-find "stack"))
+         (setq inferior-haskell-root-dir stack)
+         'stack-ghci)
+        ((and cabal
+              (executable-find "cabal"))
+         (setq inferior-haskell-root-dir cabal)
+         'cabal-repl)
+        ((executable-find "ghc")
+         (setq inferior-haskell-root-dir default-directory)
+         'ghci)
+        (t
+         (error "Could not find any installation of GHC."))))
+      ('jbi
+       (progn
+         (unless inferior-haskell-root-dir
+           (with-temp-buffer
+             (case (process-file haskell-process-path-jbi nil (current-buffer) t "info" "project")
+               (0
+                (setq inferior-haskell-root-dir (string-trim-right (buffer-string))))
+               (t
+                (error "jbi could not find a project.")))))
+         'jbi))
+      (t haskell-process-type))))
 
 (provide 'haskell-customize)

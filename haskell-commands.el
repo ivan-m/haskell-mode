@@ -86,7 +86,7 @@ You can create new session using function `haskell-session-make'."
     (haskell-process-send-startup process)
     (unless (memq (haskell-process-type)
                   ;; These all set the proper CWD.
-                  (list 'cabal-repl 'cabal-new-repl 'stack-ghci))
+                  (list 'cabal-repl 'cabal-new-repl 'stack-ghci 'jbi))
       (haskell-process-change-dir session
                                   process
                                   (haskell-session-current-dir session)))
