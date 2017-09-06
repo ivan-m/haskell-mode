@@ -66,7 +66,9 @@ directory structure."
                         haskell-process-args-cabal-repl))
     ('stack-ghci (nconc `(,haskell-process-path-stack
                           "ghci")
-                        haskell-process-args-stack-ghci))))
+                        haskell-process-args-stack-ghci))
+    ('jbi        (nconc `(,haskell-process-path-jbi
+                          "repl")))))
 
 (defconst inferior-haskell-info-xref-re
   "-- Defined at \\(.+\\):\\([0-9]+\\):\\([0-9]+\\)\\(?:-\\([0-9]+\\)\\)?$")
