@@ -180,7 +180,7 @@ HISTORY provides the history to `completing-read'."
 
 (defun haskell-session-get-targets (process-type)
   "Return a list of available targets."
-  (case process-type
+  (cl-case process-type
     ('stack-ghci
      (haskell-session-get-targets-command haskell-process-path-stack "ide" "targets"))
     (t
@@ -189,7 +189,7 @@ HISTORY provides the history to `completing-read'."
 (defun haskell-session-get-targets-command (command &rest args)
   "Run an external command to obtain a list of available targets."
   (with-temp-buffer
-    (case (apply #'process-file command nil (current-buffer) t args)
+    (cl-case (apply #'process-file command nil (current-buffer) t args)
       (0
        (cl-remove-if
         (lambda (line)
